@@ -5,7 +5,7 @@ export default defineConfig({
   description: 'Official Documentation for Saturnalia 2025 - The Grand College Festival',
   ignoreDeadLinks: true,
   themeConfig: {
-    logo: '/asset_3@4x.png',
+    logo: '/asset-3@4x.png',
     siteTitle: false,
     nav: [
       { text: 'Cultural', link: '/cultural/' },

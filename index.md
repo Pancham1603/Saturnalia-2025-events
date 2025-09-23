@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="/asset_3@4x.png" alt="Saturnalia 2025 Logo" width="500" style="margin-bottom: 2rem;">
+  <img src="/asset-3@4x.png" alt="Saturnalia 2025 Logo" width="500" style="margin-bottom: 2rem;">
 </div>
 
 Welcome to **Saturnalia 2025**, the grandest cultural and technical festival of our college! Get ready for an amazing celebration of talent, creativity, and innovation.
