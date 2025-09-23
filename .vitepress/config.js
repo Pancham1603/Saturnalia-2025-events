@@ -3,6 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'Saturnalia 2025',
   description: 'Official Documentation for Saturnalia 2025 - The Grand College Festival',
+  ignoreDeadLinks: true,
   themeConfig: {
     logo: '/Asset 3@4x.png',
     siteTitle: false,
