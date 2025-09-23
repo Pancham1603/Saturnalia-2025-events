@@ -1,0 +1,168 @@
+/* Minimal custom styles for Saturnalia 2025 */
+
+/* Remove custom backgrounds - use VitePress defaults */
+.VPDoc {
+  /* Use default background */
+  background: unset;
+}
+
+/* Remove custom content styling - use defaults */
+.VPContent {
+  background: unset;
+  backdrop-filter: unset;
+  border-radius: unset;
+  margin: unset;
+  box-shadow: unset;
+}
+
+/* Remove custom sidebar styling - use defaults */
+.VPSidebar {
+  background: unset;
+  backdrop-filter: unset;
+  border-right: unset;
+}
+
+/* Remove custom navbar styling - use defaults */
+.VPNav {
+  background: unset;
+  backdrop-filter: unset;
+  border-bottom: unset;
+}
+
+/* Responsive video styling for mobile - keep this functional */
+@media (max-width: 768px) {
+  /* Responsive video styling for mobile */
+  iframe[src*="youtube"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+  }
+  
+  /* Video container responsive */
+  div[align="center"] iframe {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+/* Keep "On this page" functionality but with default colors */
+.VPDocAside {
+  /* Use default styling */
+  background: unset;
+  backdrop-filter: unset;
+  border-radius: unset;
+  padding: unset;
+  height: fit-content !important;
+  max-height: 70vh;
+  overflow-y: auto;
+  position: sticky;
+  top: 100px;
+}
+
+/* Remove white color overrides - use default colors */
+.VPDocAsideOutline .outline-link {
+  color: unset;
+}
+
+.VPDocAsideOutline .outline-link:hover {
+  color: unset;
+}
+
+.VPDocAsideOutline .outline-title {
+  color: unset;
+  font-weight: unset;
+}
+
+.VPDocAsideOutline .outline-marker {
+  background-color: unset;
+}
+
+.VPDocAsideOutline .outline-link.active {
+  color: unset;
+  font-weight: unset;
+}
+
+/* Increase search bar width */
+.DocSearch-Button {
+  width: 300px !important;
+  max-width: 300px !important;
+}
+
+.VPNavBarSearch {
+  flex-grow: 0 !important;
+  max-width: 300px !important;
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
+.DocSearch-Button-Container {
+  width: 100% !important;
+}
+
+/* Ensure navbar content is left-aligned */
+.VPNavBarContent {
+  justify-content: flex-start !important;
+}
+
+.VPNavBarMenu {
+  margin-left: auto !important;
+}
+
+/* Responsive search bar - adjust for smaller screens */
+@media (max-width: 960px) {
+  .DocSearch-Button {
+    width: 200px !important;
+    max-width: 200px !important;
+  }
+  
+  .VPNavBarSearch {
+    max-width: 200px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .DocSearch-Button {
+    width: 180px !important;
+    max-width: 180px !important;
+    display: flex !important;
+  }
+  
+  .VPNavBarSearch {
+    max-width: 180px !important;
+    display: block !important;
+  }
+  
+  /* Force search bar to be visible in mobile */
+  .VPNavBarSearchButton {
+    display: none !important;
+  }
+  
+  /* Ensure search button shows full text */
+  .DocSearch-Button-Placeholder {
+    display: inline !important;
+  }
+  
+  .DocSearch-Button-Keys {
+    display: none !important;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .DocSearch-Button {
+    width: 150px !important;
+    max-width: 150px !important;
+  }
+  
+  .VPNavBarSearch {
+    max-width: 150px !important;
+  }
+  
+  /* Adjust navbar layout for very small screens */
+  .VPNavBar .content {
+    padding: 0 12px !important;
+  }
+}

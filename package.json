@@ -1,0 +1,35 @@
+{
+  "name": "saturnalia-2025-events",
+  "version": "1.0.0",
+  "description": "Official documentation site for Saturnalia 2025 - College Cultural and Technical Festival",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev --host 0.0.0.0 --port 2025",
+    "build": "vitepress build",
+    "preview": "vitepress preview",
+    "serve": "vitepress serve"
+  },
+  "keywords": [
+    "vitepress",
+    "documentation",
+    "college-fest",
+    "saturnalia",
+    "cultural-events",
+    "technical-events",
+    "festival"
+  ],
+  "author": "Saturnalia 2025 Organizing Committee",
+  "license": "MIT",
+  "devDependencies": {
+    "vitepress": "^1.6.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pancham1603/Saturnalia-2025-events.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Pancham1603/Saturnalia-2025-events/issues"
+  },
+  "homepage": "https://github.com/Pancham1603/Saturnalia-2025-events#readme"
+}
