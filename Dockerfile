@@ -1,24 +1,14 @@
-# Use Node.js official image
-FROM node:18-alpine
-
-# Set working directory
+FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Copy package files
+# Install deps and build
 COPY package*.json ./
-
-# Install dependencies
-RUN npm ci --only=production
-
-# Copy source code
+RUN npm ci
 COPY . .
-
-# Ensure public folder exists and has correct permissions
-RUN ls -la public/ || echo "Public folder check"
-
-# Build the VitePress site
-RUN npm install
 RUN npm run build
 
-# Debug: Check if assets were copied
-RUN ls -la dist/ || echo "Dist folder check"
+# Production image: serve static files with nginx
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+EXPOSE 80
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s CMD wget -q -O- http://localhost/ || exit 1

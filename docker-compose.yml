@@ -5,7 +5,8 @@ services:
       dockerfile: Dockerfile
     container_name: saturnalia-2025-docs
     ports:
-      - "2025:2025"
+      - "2025:80"
     restart: unless-stopped
     environment:
       - NODE_ENV=production
+    # nginx will serve the built static site from /usr/share/nginx/html
