@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: saturnalia-2025-docs
     ports:
-      - "2025:80"
+      - "4377:4377"
     restart: unless-stopped
     environment:
       - NODE_ENV=production
