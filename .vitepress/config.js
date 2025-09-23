@@ -78,7 +78,7 @@ export default defineConfig({
   base: '/',
   outDir: 'dist',
   head: [
-    ['link', { rel: 'icon', href: '/favicon.ico' }],
+    // ['link', { rel: 'icon', href: '/favicon.ico' }],
     ['meta', { name: 'theme-color', content: '#3c3c3c' }]
   ]
 })
