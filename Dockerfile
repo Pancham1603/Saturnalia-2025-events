@@ -14,4 +14,5 @@ RUN npm ci --only=production
 COPY . .
 
 # Build the VitePress site
+RUN npm install
 RUN npm run build
