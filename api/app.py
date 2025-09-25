@@ -17,11 +17,6 @@ from flask_cors import CORS
 # load local .env if present
 load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
-# Environment Variables for npm/Node.js configuration:
-# NPM_PATH - Full path to npm executable (e.g., /usr/bin/npm)
-# NODE_PATH - Node.js module paths (e.g., /usr/lib/node_modules)
-# NODE_BIN_PATH - Path to Node.js binaries directory (e.g., /usr/bin)
-
 app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), '.', 'templates'), static_folder=os.path.join(os.path.dirname(__file__), '.', 'static'))
 # Secret key for session
 app.secret_key = os.environ.get('FLASK_SECRET', 'dev-secret-change-me')
@@ -37,6 +32,42 @@ CORS(app, supports_credentials=True)
 
 logs_col = db.crud_logs
 users_col = db.users
+
+def login_required(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        if not current_user():
+            # For API requests, return JSON error
+            if request.path.startswith('/api/'):
+                return jsonify({'error': 'unauthorized'}), 401
+            # For web requests, redirect to login
+            return redirect(url_for('landing'))
+        return f(*args, **kwargs)
+    return wrapped
+
+def admin_required(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        u = current_user()
+        if not u:
+            return jsonify({'error': 'unauthorized'}), 401
+        if not (u.get('is_admin') or u.get('is_superuser')):
+            return jsonify({'error': 'forbidden'}), 403
+        return f(*args, **kwargs)
+    return wrapped
+
+
+def superuser_required(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        u = current_user()
+        if not u:
+            return jsonify({'error': 'unauthorized'}), 401
+        if not u.get('is_superuser'):
+            return jsonify({'error': 'forbidden - superuser access required'}), 403
+        return f(*args, **kwargs)
+    return wrapped
+
 
 def log_action(action, collection, doc_id=None, data=None, user=None):
     # Serialize data to handle ObjectIds
@@ -84,6 +115,7 @@ CONTENT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 # Path to VitePress docs root (adjust if needed)
 VITEPRESS_ROOT = CONTENT_ROOT
 
+@admin_required
 def rebuild_vitepress_docs():
     """Run VitePress build to update static docs after changes."""
     try:
@@ -119,44 +151,15 @@ def rebuild_vitepress_docs():
         return False, str(e)
 
 def current_user():
-    return session.get('user')
-
-
-def login_required(f):
-    @wraps(f)
-    def wrapped(*args, **kwargs):
-        if not current_user():
-            # For API requests, return JSON error
-            if request.path.startswith('/api/'):
-                return jsonify({'error': 'unauthorized'}), 401
-            # For web requests, redirect to login
-            return redirect(url_for('landing'))
-        return f(*args, **kwargs)
-    return wrapped
-
-
-def admin_required(f):
-    @wraps(f)
-    def wrapped(*args, **kwargs):
-        u = current_user()
-        if not u:
-            return jsonify({'error': 'unauthorized'}), 401
-        if not (u.get('is_admin') or u.get('is_superuser')):
-            return jsonify({'error': 'forbidden'}), 403
-        return f(*args, **kwargs)
-    return wrapped
-
-
-def superuser_required(f):
-    @wraps(f)
-    def wrapped(*args, **kwargs):
-        u = current_user()
-        if not u:
-            return jsonify({'error': 'unauthorized'}), 401
-        if not u.get('is_superuser'):
-            return jsonify({'error': 'forbidden - superuser access required'}), 403
-        return f(*args, **kwargs)
-    return wrapped
+    u = session.get('user')
+    user = users_col.find_one({'email': u['email']}) if u else None
+    if user:
+        return {
+            'email': user['email'],
+            'name': user.get('name'),
+            'is_admin': user.get('is_admin', False),
+            'is_superuser': user.get('is_superuser', False)
+        }
 
 
 def get_current_user_email():
@@ -198,7 +201,7 @@ def portal():
     return render_template('portal.html')
 
 @app.route('/editor')
-@login_required
+@admin_required
 def editor():
     return render_template('editor.html')
 
@@ -208,7 +211,7 @@ def logs():
     return render_template('logs.html')
 
 @app.route('/users')
-@superuser_required
+@admin_required
 def users():
     return render_template('users.html')
 
@@ -319,14 +322,8 @@ def whoami():
     return jsonify({})
 
 
-
-
-
-
-
-
 @app.route('/api/logs', methods=['GET'])
-@login_required
+@admin_required
 def get_logs():
     logs = list(logs_col.find().sort('timestamp', -1).limit(200))
     out = []
@@ -358,13 +355,13 @@ def get_logs():
 
 # User Management Endpoints (Superuser only)
 @app.route('/users')
-@superuser_required
+@admin_required
 def user_management():
     return render_template('users.html')
 
 
 @app.route('/api/users', methods=['GET'])
-@superuser_required
+@admin_required
 def get_users():
     users = list(users_col.find({}, {'_id': 1, 'email': 1, 'name': 1, 'is_admin': 1, 'is_superuser': 1, 'created_at': 1, 'last_login': 1}))
     for user in users:
@@ -644,7 +641,7 @@ def restore_file():
         return jsonify({'error': f'Failed to restore file: {str(e)}'}), 500
 
 @app.route('/api/filesystem/delete-permanent', methods=['DELETE'])
-@admin_required
+@superuser_required
 def delete_permanent():
     """Permanently delete a file from recently_deleted folder"""
     try:
