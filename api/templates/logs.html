@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Activity Log - Saturnalia Events</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <h1 class="logo">
+            <i class="fas fa-history"></i>
+            Activity Log
+          </h1>
+          <nav class="nav-links">
+            <a href="/portal" class="btn btn-ghost">
+              <i class="fas fa-arrow-left"></i>
+              Back to Portal
+            </a>
+          </nav>
+          <div id="auth" class="auth-section"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <div class="container">
+        <!-- Controls -->
+        <div class="controls-section">
+          <div class="filters">
+            <button id="refreshBtn" class="btn btn-secondary">
+              <i class="fas fa-sync-alt"></i>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading hidden">
+          <i class="fas fa-spinner fa-spin"></i>
+          Loading logs...
+        </div>
+
+        <!-- Logs Container -->
+        <div id="logs" class="logs-container"></div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state hidden">
+          <i class="fas fa-clipboard-list"></i>
+          <h3>No Activity Found</h3>
+          <p>No activity logs are available at the moment.</p>
+        </div>
+      </div>
+    </main>
+
+    <script src="/static/logs.js"></script>
+  </body>
+</html>

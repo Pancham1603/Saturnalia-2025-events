@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event Editor - Saturnalia Events</title>
+    <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+      .editor-container {
+        display: flex;
+        height: calc(100vh - 120px);
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      
+      .editor-panel, .preview-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #e1e5e9;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      
+      .panel-header {
+        background: #f8f9fa;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #e1e5e9;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .editor-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .form-section {
+        padding: 1rem;
+        border-bottom: 1px solid #e1e5e9;
+        background: white;
+      }
+      
+      .form-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+      
+      .form-group {
+        flex: 1;
+      }
+      
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #374151;
+      }
+      
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        background: white;
+      }
+      
+      .form-group select:focus,
+      .form-group input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+      
+      .markdown-editor {
+        flex: 1;
+      }
+      
+      .preview-content {
+        flex: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        background: white;
+      }
+      
+      .preview-content h1, .preview-content h2, .preview-content h3 {
+        margin-top: 0;
+      }
+      
+      .toolbar {
+        background: white;
+        padding: 1rem;
+        border-bottom: 1px solid #e1e5e9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .toolbar-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      
+      .toolbar-right {
+        display: flex;
+        gap: 0.5rem;
+      }
+      
+      .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+      
+      .status-indicator.saved {
+        background: #d1fae5;
+        color: #065f46;
+      }
+      
+      .status-indicator.saving {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      
+      .status-indicator.error {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: #6b7280;
+      }
+      
+      .breadcrumb a {
+        color: #3b82f6;
+        text-decoration: none;
+      }
+      
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+      
+      /* EasyMDE customizations */
+      .editor-panel .EasyMDEContainer {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .editor-panel .EasyMDEContainer .CodeMirror {
+        flex: 1;
+        height: auto;
+        border: none;
+        border-radius: 0;
+      }
+      
+      .editor-panel .editor-toolbar {
+        border-bottom: 1px solid #e1e5e9;
+        border-radius: 0;
+      }
+      
+      @media (max-width: 1024px) {
+        .editor-container {
+          flex-direction: column;
+          height: auto;
+        }
+        
+        .editor-panel, .preview-panel {
+          min-height: 500px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <h1 class="logo">
+            <i class="fas fa-calendar-alt"></i>
+            Saturnalia Events
+          </h1>
+          <nav class="nav-links">
+            <div class="breadcrumb">
+              <a href="/portal">
+                <i class="fas fa-arrow-left"></i>
+                Back to Portal
+              </a>
+            </div>
+          </nav>
+          <div id="auth" class="auth-section"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <div class="container">
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <h2 id="editorTitle">Create New Event</h2>
+            <div id="statusIndicator" class="status-indicator saved">
+              <i class="fas fa-check"></i>
+              <span>Ready</span>
+            </div>
+          </div>
+          <div class="toolbar-right">
+            <button id="backBtn" class="btn btn-ghost">
+              <i class="fas fa-arrow-left"></i>
+              Back to Main Menu
+            </button>
+            <button id="cancelBtn" class="btn btn-secondary">
+              <i class="fas fa-times"></i>
+              Cancel
+            </button>
+            <button id="saveBtn" class="btn btn-primary">
+              <i class="fas fa-save"></i>
+              Save Event
+            </button>
+          </div>
+        </div>
+
+        <!-- Editor Container -->
+        <div class="editor-container">
+          <!-- Editor Panel -->
+          <div class="editor-panel">
+            <div class="panel-header">
+              <i class="fas fa-code"></i>
+              Editor
+            </div>
+            <div class="editor-content">
+              <!-- Form Section -->
+              <div class="form-section">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="eventTitle">Title</label>
+                    <input type="text" id="eventTitle" placeholder="Event title" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="eventSlug">Slug</label>
+                    <input type="text" id="eventSlug" placeholder="event-slug" required />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="eventCategory">Category</label>
+                    <select id="eventCategory">
+                      <option value="">Select a category (optional)</option>
+                      <!-- Categories will be loaded dynamically -->
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Markdown Editor -->
+              <div class="markdown-editor">
+                <textarea id="markdownEditor" placeholder="Write your event content in Markdown..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview Panel -->
+          <div class="preview-panel">
+            <div class="panel-header">
+              <i class="fas fa-eye"></i>
+              Live Preview
+            </div>
+            <div id="previewContent" class="preview-content">
+              <p class="text-muted">Start typing to see a live preview of your event...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+      <div class="loading-spinner">
+        <i class="fas fa-spinner fa-spin"></i>
+        <span>Loading...</span>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+    <script src="/static/editor.js"></script>
+  </body>
+</html>

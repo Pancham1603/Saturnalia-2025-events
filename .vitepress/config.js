@@ -4,6 +4,7 @@ export default defineConfig({
   title: 'Saturnalia 2025',
   description: 'Official Documentation for Saturnalia 2025 - The Grand College Festival',
   ignoreDeadLinks: true,
+  srcExclude: ['**/api/**'],
   themeConfig: {
     logo: '/asset-3@4x.png',
     siteTitle: false,
@@ -49,7 +50,6 @@ export default defineConfig({
         text: '📋 Policies & Guidelines',
         collapsed: true,
         items: [
-          { text: 'Overview', link: '/policies/' },
           { text: '💳 Payment Policy', link: '/policies/payment' },
           { text: '🔒 Privacy Policy', link: '/policies/privacy' },
           { text: '🏨 Accommodation', link: '/policies/accommodation' },

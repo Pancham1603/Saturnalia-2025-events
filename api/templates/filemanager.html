@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Manager - Saturnalia Events Portal</title>
+    <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+      .file-manager {
+        display: flex;
+        height: calc(100vh - 120px);
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      
+      .file-tree {
+        width: 300px;
+        background: #f8fafc;
+        border-right: 1px solid #e2e8f0;
+        overflow-y: auto;
+        padding: 1rem;
+      }
+      
+      .file-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .file-header {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        background: #f8fafc;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .file-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.875rem;
+        color: #6b7280;
+      }
+
+      .file-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+      }
+
+      .file-meta-item i {
+        width: 14px;
+        text-align: center;
+        color: #9ca3af;
+      }
+      
+      .file-path {
+        font-family: 'Courier New', monospace;
+        color: #6b7280;
+        font-size: 0.875rem;
+        flex: 1;
+      }
+      
+      .file-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+      
+      .file-editor {
+        flex: 1;
+        padding: 1rem;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Make EasyMDE editor scrollable */
+      .CodeMirror {
+        height: auto !important;
+        min-height: 300px;
+        max-height: calc(100vh - 300px) !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 6px !important;
+      }
+
+      .CodeMirror-scroll {
+        overflow-y: auto !important;
+        max-height: calc(100vh - 300px) !important;
+      }
+
+      #editorContainer {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      #fileContent {
+        flex: 1;
+        min-height: 300px;
+        resize: vertical;
+      }
+
+      /* EasyMDE fullscreen and side-by-side modes */
+      .CodeMirror-fullscreen {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 10000 !important;
+        background: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .editor-fullscreen {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 10000 !important;
+        background: white !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        box-sizing: border-box !important;
+      }
+
+      .editor-fullscreen .CodeMirror {
+        height: calc(100vh - 100px) !important;
+        max-height: none !important;
+      }
+
+      .editor-fullscreen .editor-toolbar {
+        position: sticky !important;
+        top: 0 !important;
+        background: white !important;
+        z-index: 10001 !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        margin-bottom: 10px !important;
+      }
+
+      /* Side-by-side mode */
+      .editor-side-by-side {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 10000 !important;
+        background: white !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        box-sizing: border-box !important;
+      }
+
+      .editor-side-by-side .CodeMirror {
+        height: calc(100vh - 100px) !important;
+        max-height: none !important;
+      }
+
+      .editor-side-by-side .editor-preview-side {
+        height: calc(100vh - 100px) !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+      }
+
+      /* Hide other elements when in fullscreen modes */
+      .editor-fullscreen ~ *:not(.editor-fullscreen),
+      .editor-side-by-side ~ *:not(.editor-side-by-side) {
+        display: none !important;
+      }
+
+      /* Ensure toolbar buttons are visible and functional */
+      .editor-fullscreen .editor-toolbar .fa-expand,
+      .editor-fullscreen .editor-toolbar .fa-arrows-alt,
+      .editor-side-by-side .editor-toolbar .fa-expand,
+      .editor-side-by-side .editor-toolbar .fa-arrows-alt {
+        z-index: 10002 !important;
+      }
+      
+      .tree-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        cursor: pointer;
+        border-radius: 4px;
+        margin-bottom: 2px;
+        font-size: 0.875rem;
+      }
+      
+      .tree-item:hover {
+        background: #e2e8f0;
+      }
+      
+      .tree-item.active {
+        background: #3b82f6;
+        color: white;
+      }
+      
+      .tree-item.directory {
+        font-weight: 500;
+      }
+      
+      .tree-item .icon {
+        width: 16px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      .tree-item .item-name {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+      }
+
+      .tree-item .item-info {
+        flex-shrink: 0;
+        color: #9ca3af;
+        font-size: 0.75rem;
+      }
+      
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+      }
+      
+      .breadcrumb-item {
+        color: #6b7280;
+        cursor: pointer;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+      }
+      
+      .breadcrumb-item:hover {
+        background: #e2e8f0;
+        color: #374151;
+      }
+      
+      .breadcrumb-separator {
+        color: #9ca3af;
+      }
+      
+      .file-info {
+        background: #f8fafc;
+        padding: 0.75rem;
+        border-radius: 6px;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+        color: #6b7280;
+      }
+      
+      .no-file-selected {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #9ca3af;
+        text-align: center;
+      }
+      
+      .no-file-selected i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #e5e7eb;
+      }
+      
+      .toolbar {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        background: #f8fafc;
+        border-radius: 6px;
+      }
+      
+      .context-menu {
+        position: fixed;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        min-width: 150px;
+        display: none;
+      }
+      
+      .context-menu-item {
+        padding: 0.5rem 0.75rem;
+        cursor: pointer;
+        border-bottom: 1px solid #f3f4f6;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+      }
+      
+      .context-menu-item:last-child {
+        border-bottom: none;
+      }
+      
+      .context-menu-item:hover {
+        background: #f3f4f6;
+      }
+      
+      .context-menu-item.danger:hover {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+
+      /* Mobile Responsive Styles */
+      @media (max-width: 768px) {
+        .file-manager {
+          flex-direction: column;
+          height: auto;
+          min-height: calc(100vh - 140px);
+        }
+        
+        .file-tree {
+          width: 100%;
+          max-height: 300px;
+          border-right: none;
+          border-bottom: 1px solid #e2e8f0;
+          order: 1;
+        }
+        
+        .file-content {
+          order: 2;
+          min-height: 400px;
+        }
+        
+        .file-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.75rem;
+          padding: 0.75rem;
+        }
+        
+        .file-meta {
+          flex-wrap: wrap;
+          gap: 0.75rem;
+          width: 100%;
+        }
+        
+        .file-actions {
+          width: 100%;
+          justify-content: flex-end;
+        }
+        
+        .file-path {
+          font-size: 0.8rem;
+          word-break: break-all;
+          width: 100%;
+        }
+        
+        .toolbar {
+          flex-wrap: wrap;
+          padding: 0.75rem;
+          gap: 0.375rem;
+        }
+        
+        .toolbar .btn {
+          flex: 1;
+          min-width: 0;
+          justify-content: center;
+          padding: 0.5rem 0.25rem;
+          font-size: 0.8rem;
+        }
+        
+        .breadcrumb {
+          flex-wrap: wrap;
+          gap: 0.25rem;
+          font-size: 0.8rem;
+          margin-bottom: 0.75rem;
+        }
+        
+        .breadcrumb-item {
+          padding: 0.2rem 0.4rem;
+          font-size: 0.75rem;
+        }
+        
+        .tree-item {
+          padding: 0.75rem 0.5rem;
+          font-size: 0.85rem;
+        }
+        
+        .tree-item .item-name {
+          font-size: 0.85rem;
+        }
+        
+        .tree-item .item-info {
+          font-size: 0.7rem;
+        }
+        
+        .context-menu {
+          min-width: 180px;
+          font-size: 0.9rem;
+        }
+        
+        .context-menu-item {
+          padding: 0.75rem 1rem;
+        }
+        
+        /* Editor mobile styles */
+        .file-editor {
+          padding: 0.75rem;
+        }
+        
+        .CodeMirror {
+          min-height: 250px !important;
+          max-height: calc(100vh - 400px) !important;
+          font-size: 14px !important;
+        }
+        
+        .CodeMirror-scroll {
+          max-height: calc(100vh - 400px) !important;
+        }
+        
+        #fileContent {
+          min-height: 250px;
+          font-size: 14px;
+        }
+        
+        /* EasyMDE toolbar mobile adjustments */
+        .editor-toolbar {
+          flex-wrap: wrap !important;
+          padding: 0.5rem !important;
+        }
+        
+        .editor-toolbar .separator {
+          display: none !important;
+        }
+        
+        .editor-toolbar a {
+          width: 32px !important;
+          height: 32px !important;
+          font-size: 14px !important;
+          margin: 1px !important;
+        }
+        
+        /* Mobile fullscreen editor */
+        .editor-fullscreen,
+        .editor-side-by-side {
+          padding: 10px !important;
+        }
+        
+        .editor-fullscreen .CodeMirror,
+        .editor-side-by-side .CodeMirror {
+          height: calc(100vh - 80px) !important;
+        }
+        
+        .editor-side-by-side .editor-preview-side {
+          height: calc(100vh - 80px) !important;
+        }
+        
+        /* Mobile modals */
+        .modal-content {
+          margin: 1rem !important;
+          max-width: calc(100vw - 2rem) !important;
+          max-height: calc(100vh - 2rem) !important;
+        }
+        
+        .modal-header {
+          padding: 1rem !important;
+        }
+        
+        .modal-body {
+          padding: 1rem !important;
+        }
+        
+        .modal-footer {
+          padding: 1rem !important;
+          flex-direction: column-reverse;
+          gap: 0.5rem;
+        }
+        
+        .modal-footer .btn {
+          width: 100%;
+          justify-content: center;
+        }
+        
+        /* No file selected mobile */
+        .no-file-selected {
+          padding: 2rem 1rem;
+        }
+        
+        .no-file-selected i {
+          font-size: 2rem;
+        }
+        
+        .no-file-selected h3 {
+          font-size: 1.1rem;
+        }
+        
+        .no-file-selected p {
+          font-size: 0.9rem;
+        }
+      }
+      
+      /* Tablet styles */
+      @media (min-width: 769px) and (max-width: 1024px) {
+        .file-tree {
+          width: 250px;
+        }
+        
+        .file-header {
+          padding: 0.875rem;
+          gap: 0.875rem;
+        }
+        
+        .CodeMirror {
+          max-height: calc(100vh - 280px) !important;
+        }
+        
+        .CodeMirror-scroll {
+          max-height: calc(100vh - 280px) !important;
+        }
+      }
+      
+      /* Touch-friendly improvements */
+      @media (pointer: coarse) {
+        .tree-item {
+          padding: 0.875rem 0.5rem;
+          margin-bottom: 3px;
+        }
+        
+        .btn {
+          min-height: 44px;
+          padding: 0.75rem 1rem;
+        }
+        
+        .btn-sm {
+          min-height: 36px;
+          padding: 0.5rem 0.75rem;
+        }
+        
+        .context-menu-item {
+          padding: 0.875rem 1rem;
+          min-height: 44px;
+        }
+        
+        .toolbar .btn {
+          min-height: 40px;
+        }
+        
+        /* Mobile navigation */
+        .header {
+          position: relative;
+        }
+        
+        .header-content {
+          flex-direction: column;
+          gap: 1rem;
+        }
+        
+        .nav {
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+        }
+        
+        .logo {
+          font-size: 1.25rem;
+        }
+        
+        .nav-links {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 0.5rem;
+          width: 100%;
+        }
+        
+        .nav-link {
+          flex: 1;
+          min-width: fit-content;
+          text-align: center;
+          padding: 0.75rem 0.5rem;
+          font-size: 0.85rem;
+          border-radius: 6px;
+          transition: all 0.2s ease;
+        }
+        
+        .nav-link i {
+          display: block;
+          margin-bottom: 0.25rem;
+          font-size: 1rem;
+        }
+        
+        .auth-section {
+          width: 100%;
+          text-align: center;
+        }
+        
+        .auth-section .btn {
+          width: 100%;
+          max-width: 200px;
+        }
+      }
+      
+      /* Small mobile navigation */
+      @media (max-width: 480px) {
+        .header-content {
+          padding: 0.75rem;
+        }
+        
+        .logo {
+          font-size: 1.1rem;
+        }
+        
+        .nav-links {
+          gap: 0.25rem;
+        }
+        
+        .nav-link {
+          padding: 0.625rem 0.375rem;
+          font-size: 0.8rem;
+          min-width: 0;
+        }
+        
+        .nav-link i {
+          font-size: 0.9rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <!-- Header -->
+      <header class="header">
+        <div class="container">
+          <div class="header-content">
+            <nav class="nav">
+              <h1 class="logo">
+            <i class="fas fa-cog"></i>
+            Saturnalia Portal
+          </h1>
+
+              <div class="nav-links">
+                <a href="/portal" class="nav-link">
+                  <i class="fas fa-home"></i>
+                  Portal
+                </a>
+                <a href="/filemanager" class="nav-link active">
+                  <i class="fas fa-folder-open"></i>
+                  File Manager
+                </a>
+                <a href="/recently-deleted" class="nav-link">
+                  <i class="fas fa-trash-restore"></i>
+                  Recently Deleted
+                </a>
+              </div>
+            </nav>
+            <div id="auth" class="auth-section"></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <div class="main">
+        <div class="container">
+          
+          <!-- File Manager Interface -->
+          <div class="file-manager">
+            <!-- File Tree -->
+            <div class="file-tree">
+              <div class="toolbar">
+                <button id="refreshBtn" class="btn btn-sm btn-secondary" title="Refresh">
+                  <i class="fas fa-sync"></i>
+                </button>
+                <button id="newFileBtn" class="btn btn-sm btn-primary" title="New File">
+                  <i class="fas fa-plus"></i>
+                </button>
+                <button id="newFolderBtn" class="btn btn-sm btn-primary" title="New Folder">
+                  <i class="fas fa-folder"></i>
+                </button>
+              </div>
+              
+              <div class="breadcrumb" id="breadcrumb">
+                <div class="breadcrumb-item" data-path="">
+                  <i class="fas fa-home"></i>
+                  Root
+                </div>
+              </div>
+              
+              <div id="fileTree" class="file-tree-content">
+                <div class="loading">
+                  <i class="fas fa-spinner fa-spin"></i>
+                  Loading files...
+                </div>
+              </div>
+            </div>
+            
+            <!-- File Content -->
+            <div class="file-content">
+              <div class="file-header">
+                <div class="file-path" id="currentFilePath">No file selected</div>
+                <div class="file-meta" id="fileMeta" style="display: none;">
+                  <div class="file-meta-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span id="fileTypeHeader">-</span>
+                  </div>
+                  <div class="file-meta-item">
+                    <i class="fas fa-weight"></i>
+                    <span id="fileSizeHeader">-</span>
+                  </div>
+                  <div class="file-meta-item">
+                    <i class="fas fa-clock"></i>
+                    <span id="fileModifiedHeader">-</span>
+                  </div>
+                </div>
+                <div class="file-actions">
+                  <button id="saveBtn" class="btn btn-success" style="display: none;">
+                    <i class="fas fa-save"></i>
+                    Save
+                  </button>
+                  <button id="discardBtn" class="btn btn-secondary" style="display: none;">
+                    <i class="fas fa-undo"></i>
+                    Discard
+                  </button>
+                </div>
+              </div>
+              
+              <div class="file-editor">
+                <div id="noFileSelected" class="no-file-selected">
+                  <i class="fas fa-file-alt"></i>
+                  <h3>No File Selected</h3>
+                  <p>Select a file from the tree to view or edit its content</p>
+                </div>
+                
+                <div id="editorContainer" style="display: none;">
+                  <textarea id="fileContent"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div id="contextMenu" class="context-menu">
+      <div class="context-menu-item" id="contextRename">
+        <i class="fas fa-edit"></i>
+        Rename
+      </div>
+      <div class="context-menu-item danger" id="contextDelete">
+        <i class="fas fa-trash"></i>
+        Delete
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Create File/Folder Modal -->
+    <div id="createModal" class="modal hidden">
+      <div class="modal-overlay"></div>
+      <div class="modal-content small">
+        <div class="modal-header">
+          <h3 id="createModalTitle">Create New</h3>
+          <button id="closeCreateModal" class="btn btn-ghost">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="createForm">
+            <div class="form-group">
+              <label for="createName">Name</label>
+              <input type="text" id="createName" name="name" placeholder="Enter name" required />
+            </div>
+            <input type="hidden" id="createType" name="type" value="file" />
+            <input type="hidden" id="createPath" name="path" value="" />
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="cancelCreateBtn" class="btn btn-secondary">Cancel</button>
+          <button id="confirmCreateBtn" class="btn btn-primary">Create</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rename Modal -->
+    <div id="renameModal" class="modal hidden">
+      <div class="modal-overlay"></div>
+      <div class="modal-content small">
+        <div class="modal-header">
+          <h3>Rename</h3>
+          <button id="closeRenameModal" class="btn btn-ghost">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="renameForm">
+            <div class="form-group">
+              <label for="renameName">New Name</label>
+              <input type="text" id="renameName" name="name" placeholder="Enter new name" required />
+            </div>
+            <input type="hidden" id="renamePath" name="path" value="" />
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="cancelRenameBtn" class="btn btn-secondary">Cancel</button>
+          <button id="confirmRenameBtn" class="btn btn-primary">Rename</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Load JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+    <script src="/static/filemanager.js"></script>
+  </body>
+</html>

@@ -1,0 +1,298 @@
+<!doctype html>
+
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Saturnalia Events Portal</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+ <link rel="stylesheet" href="/static/style.css" />
+
+      <style>
+
+
+     /* Main layout styles */
+    .main {
+    flex: 1;
+     background: #f1f5f9;
+
+      padding-top: 0.7rem;
+
+   overflow-y: auto;
+
+    }
+
+    .management-section {
+
+    display: flex;
+       gap: 1rem;
+      margin-bottom: 1.5rem;
+       padding: 0.5rem 0;
+        border-bottom: 1px solid #e2e8f0;
+      }
+      
+      .management-section .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: #f8fafc;
+        color: #4a5568;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s;
+        cursor: pointer;
+        border: none;
+      }
+      
+      .management-section .btn:hover {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+      }
+      
+      .management-section .btn i {
+        font-size: 1rem;
+      }
+
+      /* Features grid styles */
+      .welcome-section {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+
+      .welcome-section h2 {
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+      }
+
+      .welcome-section > p {
+        color: #6b7280;
+        margin-bottom: 2rem;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .feature-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.2s;
+      }
+
+      .feature-card:hover {
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+      }
+
+      .feature-card i {
+        font-size: 2rem;
+        color: #667eea;
+        margin-bottom: 1rem;
+      }
+
+      .feature-card h3 {
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+        font-size: 1.125rem;
+      }
+
+      .feature-card p {
+        color: #6b7280;
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+      
+      /* Header navigation styles */
+      .management-nav {
+        display: none; /* Default hidden, show on desktop */
+        gap: 1rem;
+        align-items: center;
+      }
+      
+      .btn-nav {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #4a5568;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        transition: all 0.2s ease;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        font-weight: 500;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      
+      .btn-nav:hover {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+      }
+      
+      .btn-nav i {
+        margin-right: 0.5rem;
+        font-size: 0.85rem;
+      }
+      
+      /* Responsive behavior */
+      @media (min-width: 1024px) {
+        /* Hide mobile management section on desktop/laptop */
+        .management-section {
+          display: none !important;
+        }
+        
+        /* Show header navigation on desktop/laptop */
+        .header .nav-links .management-nav {
+          display: flex !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+        }
+        
+        .management-nav .btn-nav {
+          display: inline-flex !important;
+          visibility: visible !important;
+        }
+      }
+      
+      @media (max-width: 1023px) {
+        /* Hide header navigation on mobile/tablet */
+        .management-nav {
+          display: none !important;
+        }
+        
+        /* Show mobile management section */
+        .management-section {
+          display: flex !important;
+          flex-direction: row;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+          margin-top: 0.5rem;
+          padding: 0.25rem 0;
+          flex-wrap: wrap;
+        }
+        
+        .management-section .btn {
+          flex: 1;
+          min-width: 0;
+          justify-content: center;
+          padding: 0.75rem 0.5rem;
+          font-size: 0.85rem;
+        }
+        
+        .management-section .btn i {
+          font-size: 0.9rem;
+          margin-right: 0.25rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <h1 class="logo">
+            <i class="fas fa-cog"></i>
+            Saturnalia Portal
+          </h1>
+          <nav class="nav-links">
+            <!-- Management buttons for desktop -->
+            <div class="management-nav">
+              <button id="fileManagerBtnHeader" class="btn btn-info btn-nav">
+                <i class="fas fa-folder-open"></i>
+                File Manager
+              </button>
+              <button id="logsBtnHeader" class="btn btn-secondary btn-nav" style="display: none;">
+                <i class="fas fa-history"></i>
+                Logs
+              </button>
+              <button id="usersBtnHeader" class="btn btn-secondary btn-nav" style="display: none;">
+                <i class="fas fa-users"></i>
+                Users
+              </button>
+            </div>
+          </nav>
+          <div id="auth" class="auth-section"></div>
+        </div>
+        <!-- Manual VitePress Rebuild Button -->
+        <div style="margin: 2rem 0; text-align: center;">
+          <button id="rebuildDocsBtn" class="btn btn-warning">
+            <i class="fas fa-sync-alt"></i>
+            Rebuild Documentation
+          </button>
+          <div id="rebuildDocsStatus" style="margin-top: 1rem; color: #4a5568;"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main">
+      <div class="container">
+        <!-- Management Actions -->
+        <div class="management-section">
+          <button id="fileManagerBtn" class="btn btn-info">
+            <i class="fas fa-folder-open"></i>
+            File Manager
+          </button>
+          <button id="logsBtn" class="btn btn-secondary" style="display: none;">
+            <i class="fas fa-history"></i>
+            Logs
+          </button>
+          <button id="usersBtn" class="btn btn-secondary" style="display: none;">
+            <i class="fas fa-users"></i>
+            Users
+          </button>
+        </div>
+
+        <!-- Welcome Message -->
+        <div class="welcome-section">
+          <h2>Welcome to the Portal</h2>
+          <p>This portal provides administrative tools for managing the Saturnalia documentation system.</p>
+          <div class="features-grid">
+            <div class="feature-card">
+              <i class="fas fa-folder-open"></i>
+              <h3>File Manager</h3>
+              <p>Browse, edit, create, and manage VitePress documentation files directly through the web interface.</p>
+            </div>
+            <div class="feature-card" id="userManagementCard" style="display: none;">
+              <i class="fas fa-users"></i>
+              <h3>User Management</h3>
+              <p>Manage user accounts, permissions, and access levels for the portal system.</p>
+            </div>
+            <div class="feature-card" id="logsCard" style="display: none;">
+              <i class="fas fa-history"></i>
+              <h3>Activity Logs</h3>
+              <p>Review system activity, file changes, and user actions for audit purposes.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+    <script src="/static/portal.js"></script>
+  </body>
+</html>
