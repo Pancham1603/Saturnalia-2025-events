@@ -54,7 +54,7 @@ export default defineConfig({
           { text: '🔒 Privacy Policy', link: '/policies/privacy' },
           { text: '🏨 Accommodation', link: '/policies/accommodation' },
           { text: '↩️ Refund Policy', link: '/policies/refund' },
-          { text: '⚖️ Code of Conduct', link: '/policies/conduct' },
+         { text: '⚖️ Code of Conduct', link: '/policies/conduct' },
           { text: '📜 Terms & Conditions', link: '/policies/terms' }
         ]
       },

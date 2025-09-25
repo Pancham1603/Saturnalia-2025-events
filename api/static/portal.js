@@ -53,6 +53,15 @@ async function loadMe() {
         if (usersBtnHeader) usersBtnHeader.style.display = 'inline-flex';
         if (userManagementCard) userManagementCard.style.display = 'block';
       }
+      const rebuildBtn = document.getElementById('rebuildDocsBtn');
+      const rebuildBtnHeader = document.getElementById('rebuildDocsBtnHeader');
+      if (me.admin || me.superuser) {
+        if (rebuildBtn) rebuildBtn.style.display = 'inline-flex';
+        if (rebuildBtnHeader) rebuildBtnHeader.style.display = 'inline-flex';
+      } else {
+        if (rebuildBtn) rebuildBtn.style.display = 'none';
+        if (rebuildBtnHeader) rebuildBtnHeader.style.display = 'none';
+      }
     } else {
       authEl.innerHTML = `<a href="/auth/google">Login with Google</a>`;
     }
@@ -228,32 +237,40 @@ async function initialize() {
 document.addEventListener('DOMContentLoaded', () => {
   initialize();
 
-  // Manual VitePress rebuild button logic
-  const rebuildBtn = document.getElementById('rebuildDocsBtn');
   const statusDiv = document.getElementById('rebuildDocsStatus');
-  if (rebuildBtn) {
-    rebuildBtn.addEventListener('click', async () => {
-      rebuildBtn.disabled = true;
-      statusDiv.textContent = 'Rebuilding documentation...';
-      try {
-        const res = await fetch('/api/rebuild-docs', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include'
-        });
-        const data = await res.json();
-        if (data.vitepress_rebuild) {
-          showNotification('Documentation rebuilt successfully!', 'success');
-          statusDiv.textContent = 'Documentation rebuilt successfully.';
-        } else {
-          showNotification('Rebuild failed: ' + (data.vitepress_output || 'Unknown error'), 'error');
-          statusDiv.textContent = 'Rebuild failed: ' + (data.vitepress_output || 'Unknown error');
-        }
-      } catch (err) {
-        showNotification('Error rebuilding docs: ' + err.message, 'error');
-        statusDiv.textContent = 'Error rebuilding docs: ' + err.message;
+  const rebuildBtn = document.getElementById('rebuildDocsBtn');
+  const rebuildBtnHeader = document.getElementById('rebuildDocsBtnHeader');
+
+  const handleRebuildClick = async (button) => {
+    if (!button) return;
+    button.disabled = true;
+    if (statusDiv) statusDiv.textContent = 'Rebuilding documentation...';
+    try {
+      const res = await fetch('/api/rebuild-docs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+      const data = await res.json();
+      if (data.vitepress_rebuild) {
+        showNotification('Documentation rebuilt successfully!', 'success');
+        if (statusDiv) statusDiv.textContent = 'Documentation rebuilt successfully.';
+      } else {
+        const message = data.vitepress_output || 'Unknown error';
+        showNotification('Rebuild failed: ' + message, 'error');
+        if (statusDiv) statusDiv.textContent = '';
       }
-      rebuildBtn.disabled = false;
-    });
+    } catch (err) {
+      showNotification('Error rebuilding docs: ' + err.message, 'error');
+      if (statusDiv) statusDiv.textContent = '';
+    }
+    button.disabled = false;
+  };
+
+  if (rebuildBtn) {
+    rebuildBtn.addEventListener('click', () => handleRebuildClick(rebuildBtn));
+  }
+  if (rebuildBtnHeader) {
+    rebuildBtnHeader.addEventListener('click', () => handleRebuildClick(rebuildBtnHeader));
   }
 });

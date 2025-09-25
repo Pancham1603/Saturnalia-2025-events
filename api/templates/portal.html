@@ -232,17 +232,13 @@
                 <i class="fas fa-users"></i>
                 Users
               </button>
+              <button id="rebuildDocsBtnHeader" class="btn btn-warning btn-nav" style="display: none;">
+                <i class="fas fa-sync-alt"></i>
+                Rebuild Docs
+              </button>
             </div>
           </nav>
           <div id="auth" class="auth-section"></div>
-        </div>
-        <!-- Manual VitePress Rebuild Button -->
-        <div style="margin: 2rem 0; text-align: center;">
-          <button id="rebuildDocsBtn" class="btn btn-warning">
-            <i class="fas fa-sync-alt"></i>
-            Rebuild Documentation
-          </button>
-          <div id="rebuildDocsStatus" style="margin-top: 1rem; color: #4a5568;"></div>
         </div>
       </div>
     </header>
@@ -264,24 +260,29 @@
             <i class="fas fa-users"></i>
             Users
           </button>
+          <button id="rebuildDocsBtn" class="btn btn-warning" style="display: none;">
+            <i class="fas fa-sync-alt"></i>
+            Rebuild Documentation
+          </button>
         </div>
+        <div id="rebuildDocsStatus" style="margin: 1rem 0; color: #4a5568; text-align: center;"></div>
 
         <!-- Welcome Message -->
         <div class="welcome-section">
           <h2>Welcome to the Portal</h2>
           <p>This portal provides administrative tools for managing the Saturnalia documentation system.</p>
           <div class="features-grid">
-            <div class="feature-card">
+            <div class="feature-card" onclick="window.location.href='/filemanager'" style="cursor: pointer;">
               <i class="fas fa-folder-open"></i>
               <h3>File Manager</h3>
               <p>Browse, edit, create, and manage VitePress documentation files directly through the web interface.</p>
             </div>
-            <div class="feature-card" id="userManagementCard" style="display: none;">
+            <div class="feature-card" id="userManagementCard" onclick="window.location.href='/users'" style="display: none; cursor: pointer;">
               <i class="fas fa-users"></i>
               <h3>User Management</h3>
               <p>Manage user accounts, permissions, and access levels for the portal system.</p>
             </div>
-            <div class="feature-card" id="logsCard" style="display: none;">
+            <div class="feature-card" id="logsCard" onclick="window.location.href='/logs'" style="display: none; cursor: pointer;">
               <i class="fas fa-history"></i>
               <h3>Activity Logs</h3>
               <p>Review system activity, file changes, and user actions for audit purposes.</p>
