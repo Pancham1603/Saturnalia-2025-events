@@ -17,6 +17,11 @@ from flask_cors import CORS
 # load local .env if present
 load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
+# Environment Variables for npm/Node.js configuration:
+# NPM_PATH - Full path to npm executable (e.g., /usr/bin/npm)
+# NODE_PATH - Node.js module paths (e.g., /usr/lib/node_modules)
+# NODE_BIN_PATH - Path to Node.js binaries directory (e.g., /usr/bin)
+
 app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), '.', 'templates'), static_folder=os.path.join(os.path.dirname(__file__), '.', 'static'))
 # Secret key for session
 app.secret_key = os.environ.get('FLASK_SECRET', 'dev-secret-change-me')
@@ -82,13 +87,29 @@ VITEPRESS_ROOT = CONTENT_ROOT
 def rebuild_vitepress_docs():
     """Run VitePress build to update static docs after changes."""
     try:
+        # Get npm path from environment variable, fallback to 'npm'
+        npm_path = os.environ.get('NPM_PATH', 'npm')
+        
+        # Set up environment variables for Node.js
+        env = os.environ.copy()
+        
+        # Add Node.js paths if specified
+        if 'NODE_PATH' in os.environ:
+            env['NODE_PATH'] = os.environ['NODE_PATH']
+        
+        # Ensure PATH includes Node.js binaries
+        node_bin_path = os.environ.get('NODE_BIN_PATH')
+        if node_bin_path:
+            env['PATH'] = f"{node_bin_path}:{env.get('PATH', '')}"
+        
         result = subprocess.run(
-            ["npm", "run", "build"],
+            [npm_path, "run", "build"],
             cwd=VITEPRESS_ROOT,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            timeout=120
+            timeout=120,
+            env=env
         )
         if result.returncode == 0:
             return True, result.stdout

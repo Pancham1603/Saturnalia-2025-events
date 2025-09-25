@@ -101,3 +101,20 @@ temp/
 # VitePress specific
 .vitepress/.temp
 .vitepress/cache
+
+
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+venv
+__pycache__/
+*.pyc
+instance/
+.webassets-cache
+api/migrations/
+api/*.sqlite
+api/*.db
+api/*.log
+api/static/gen/
+api/static/uploads/
+api/static/tmp/
