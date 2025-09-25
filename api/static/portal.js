@@ -44,11 +44,11 @@ async function loadMe() {
         if (logsCard) logsCard.style.display = 'block';
       }
       
-      // Show user management button for superusers only (both mobile and header versions)
+      // Show user management button for admins and superusers (both mobile and header versions)
       const usersBtn = document.getElementById('usersBtn');
       const usersBtnHeader = document.getElementById('usersBtnHeader');
       const userManagementCard = document.getElementById('userManagementCard');
-      if (me.superuser) {
+      if (me.admin || me.superuser) {
         if (usersBtn) usersBtn.style.display = 'inline-flex';
         if (usersBtnHeader) usersBtnHeader.style.display = 'inline-flex';
         if (userManagementCard) userManagementCard.style.display = 'block';
@@ -62,12 +62,36 @@ async function loadMe() {
         if (rebuildBtn) rebuildBtn.style.display = 'none';
         if (rebuildBtnHeader) rebuildBtnHeader.style.display = 'none';
       }
+      
+      // Show file manager buttons for admins and superusers only (both mobile and header versions)
+      const fileManagerBtn = document.getElementById('fileManagerBtn');
+      const fileManagerBtnHeader = document.getElementById('fileManagerBtnHeader');
+      const fileManagerCard = document.getElementById('fileManagerCard');
+      const accessRequestMessage = document.getElementById('accessRequestMessage');
+      
+      if (me.admin || me.superuser) {
+        if (fileManagerBtn) fileManagerBtn.style.display = 'inline-flex';
+        if (fileManagerBtnHeader) fileManagerBtnHeader.style.display = 'inline-flex';
+        if (fileManagerCard) fileManagerCard.style.display = 'block';
+        if (accessRequestMessage) accessRequestMessage.style.display = 'none';
+      } else {
+        if (fileManagerBtn) fileManagerBtn.style.display = 'none';
+        if (fileManagerBtnHeader) fileManagerBtnHeader.style.display = 'none';
+        if (fileManagerCard) fileManagerCard.style.display = 'none';
+        if (accessRequestMessage) accessRequestMessage.style.display = 'block';
+      }
     } else {
       authEl.innerHTML = `<a href="/auth/google">Login with Google</a>`;
+      // Hide access request message when not logged in
+      const accessRequestMessage = document.getElementById('accessRequestMessage');
+      if (accessRequestMessage) accessRequestMessage.style.display = 'none';
     }
   } catch (err) {
     console.error('Failed to load user:', err);
     document.getElementById('auth').innerHTML = `<a href="/auth/google">Login with Google</a>`;
+    // Hide access request message on error
+    const accessRequestMessage = document.getElementById('accessRequestMessage');
+    if (accessRequestMessage) accessRequestMessage.style.display = 'none';
   }
 }
 

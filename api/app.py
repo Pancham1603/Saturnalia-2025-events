@@ -49,6 +49,7 @@ def admin_required(f):
     @wraps(f)
     def wrapped(*args, **kwargs):
         u = current_user()
+        print(u)
         if not u:
             return jsonify({'error': 'unauthorized'}), 401
         if not (u.get('is_admin') or u.get('is_superuser')):

@@ -156,6 +156,47 @@
         font-size: 0.85rem;
       }
       
+      /* Access request message styles */
+      .access-request-message {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        text-align: center;
+      }
+
+      .access-request-card {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+      }
+
+      .access-request-card i {
+        font-size: 3rem;
+        color: #dc2626;
+        margin-bottom: 1rem;
+      }
+
+      .access-request-card h3 {
+        color: #dc2626;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+      }
+
+      .access-request-card p {
+        color: #7f1d1d;
+        margin-bottom: 0.5rem;
+        line-height: 1.5;
+      }
+
+      .access-request-card p:last-child {
+        margin-bottom: 0;
+      }
+
       /* Responsive behavior */
       @media (min-width: 1024px) {
         /* Hide mobile management section on desktop/laptop */
@@ -220,7 +261,7 @@
           <nav class="nav-links">
             <!-- Management buttons for desktop -->
             <div class="management-nav">
-              <button id="fileManagerBtnHeader" class="btn btn-info btn-nav">
+              <button id="fileManagerBtnHeader" class="btn btn-info btn-nav" style="display: none;">
                 <i class="fas fa-folder-open"></i>
                 File Manager
               </button>
@@ -248,7 +289,7 @@
       <div class="container">
         <!-- Management Actions -->
         <div class="management-section">
-          <button id="fileManagerBtn" class="btn btn-info">
+          <button id="fileManagerBtn" class="btn btn-info" style="display: none;">
             <i class="fas fa-folder-open"></i>
             File Manager
           </button>
@@ -265,6 +306,17 @@
             Rebuild Documentation
           </button>
         </div>
+
+        <!-- Access Request Message for Non-Admin Users -->
+        <div id="accessRequestMessage" class="access-request-message" style="display: none;">
+          <div class="access-request-card">
+            <i class="fas fa-lock"></i>
+            <h3>Admin Access Required</h3>
+            <p>You need administrator permissions to access the file management system.</p>
+            <p>Please contact your system administrator to request access.</p>
+          </div>
+        </div>
+
         <div id="rebuildDocsStatus" style="margin: 1rem 0; color: #4a5568; text-align: center;"></div>
 
         <!-- Welcome Message -->
@@ -272,7 +324,7 @@
           <h2>Welcome to the Portal</h2>
           <p>This portal provides administrative tools for managing the Saturnalia documentation system.</p>
           <div class="features-grid">
-            <div class="feature-card" onclick="window.location.href='/filemanager'" style="cursor: pointer;">
+            <div id="fileManagerCard" class="feature-card" onclick="window.location.href='/filemanager'" style="display: none; cursor: pointer;">
               <i class="fas fa-folder-open"></i>
               <h3>File Manager</h3>
               <p>Browse, edit, create, and manage VitePress documentation files directly through the web interface.</p>
