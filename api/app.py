@@ -811,15 +811,12 @@ def write_file_content():
         # Log the action
         log_action('write_file', 'filesystem', data={'path': file_path, 'size': len(content)}, 
                   user=get_current_user_email())
-        # Trigger VitePress rebuild
-        success, output = rebuild_vitepress_docs()
+        
         return jsonify({
             'status': 'success',
             'path': file_path,
             'size': len(content),
-            'modified': datetime.now().isoformat(),
-            'vitepress_rebuild': success,
-            'vitepress_output': output
+            'modified': datetime.now().isoformat()
         })
         
     except Exception as e:
@@ -900,14 +897,11 @@ Add your content here.
             log_action(action_type, 'filesystem', 
                       data={'path': os.path.join(path, name), 'is_directory': is_directory}, 
                       user=get_current_user_email())
-            # Trigger VitePress rebuild
-            success, output = rebuild_vitepress_docs()
+            
             return jsonify({
                 'status': 'success',
                 'path': os.path.join(path, name).replace('\\', '/'),
-                'is_directory': is_directory,
-                'vitepress_rebuild': success,
-                'vitepress_output': output
+                'is_directory': is_directory
             })
             
         except Exception as e:
@@ -982,9 +976,8 @@ def delete_file_or_directory():
             # Log the action
             log_action(action_type, 'filesystem', data={'path': file_path}, 
                       user=get_current_user_email())
-            # Trigger VitePress rebuild
-            success, output = rebuild_vitepress_docs()
-            return jsonify({'status': 'success', 'path': file_path, 'vitepress_rebuild': success, 'vitepress_output': output})
+            
+            return jsonify({'status': 'success', 'path': file_path})
             
         except Exception as e:
             return jsonify({'error': f'Failed to delete: {str(e)}'}), 500
@@ -1064,14 +1057,11 @@ def rename_file_or_directory():
             log_action('rename', 'filesystem', 
                       data={'old_path': old_path, 'new_path': new_path}, 
                       user=get_current_user_email())
-            # Trigger VitePress rebuild
-            success, output = rebuild_vitepress_docs()
+            
             return jsonify({
                 'status': 'success',
                 'old_path': old_path,
-                'new_path': new_path,
-                'vitepress_rebuild': success,
-                'vitepress_output': output
+                'new_path': new_path
             })
             
         except Exception as e:
